@@ -2,6 +2,13 @@
 session_start();
 include_once "consnn.php";
 echo $_SESSION["account"];
+
+if(isset($_SESSION["account"])){
+    echo 'have session';
+}else{
+    echo 'no session';
+}
+
 $p_acc = $_SESSION["account"];
 
 $sql = "select * from membersystem where mail = '$p_acc' and state = 1";
@@ -12,7 +19,21 @@ $p_name = $row["name"];
 $content_sql = "SELECT * FROM `membercontent` order by auto_no asc";
 $cont_result = $conn->query($content_sql);
 
-?>
+$p_content = addslashes($_POST["content"]);
+echo $p_content;
+if($p_content != null){
+    $add_sql = "insert into `membercontent` 
+    (`name`, `message`)
+    values
+    ('$p_name','$p_content')";
+    if($conn->query($add_sql) === TRUE){
+        //echo '建立成功<br>';
+        exit(header("Location:index.php"));
+    }else{
+        echo '建立失敗<br>' . $sql_content . "<br>" . $conn->error;;
+    }
+}
+?> 
 <!doctype html>
 <html>
 <head>
@@ -61,7 +82,7 @@ $cont_result = $conn->query($content_sql);
             echo '<h5>Hi! '.$p_name.'. Welcome to this page!</h5>';
             echo '
             <h6>You can leave a message in this text box.</h6>
-            <form action="run_submit.php" method="POST">
+            <form id="myForm" action="index.php" method="POST">
             <div class="form-group">
             <textarea class="form-control" rows="3" placeholder="Leave your comment..." name="content"></textarea>
             </div>
@@ -74,5 +95,28 @@ $cont_result = $conn->query($content_sql);
         
         <h6><br><br><br></h6>
     </div>
+    <script>
+  // 存檔當前滾動位置
+        function storeScrollPosition() {
+            document.getElementById('myForm').addEventListener('submit', function() {
+                sessionStorage.setItem('scrollPos', window.scrollY);
+            });
+        }
+
+  // 頁面重新加載後回復滾動位置
+        function restoreScrollPosition() {
+            var scrollPos = sessionStorage.getItem('scrollPos');
+            if (scrollPos !== null) {
+                window.scrollTo(0, scrollPos);
+                sessionStorage.removeItem('scrollPos');
+            }
+    }
+
+  // 页面加载完成时调用函数
+        window.addEventListener('load', function() {
+            storeScrollPosition();
+            restoreScrollPosition();
+        });
+    </script>
 </body>
 </html>
