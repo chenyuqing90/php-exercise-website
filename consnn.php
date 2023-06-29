@@ -2,7 +2,7 @@
 date_default_timezone_set("Asia/Taipei");
 //----DB連接----
 $servername = "localhost";
-$username = "****";
+$username = "*****";
 $password = "*****";
 $dbname = "newtest";
 // 建立連接
